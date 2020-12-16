@@ -1,6 +1,6 @@
 ##
 # Pre-stage image to extract and manipulate Minion directory structure
-# Normally we install to /opt/minion and not /opt/minion-26.1.3-SNAPSHOT
+# Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
@@ -48,8 +48,11 @@ COPY --chown=10001:0 --from=minion-base /opt /opt
 COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
 
+# Create the directory for server certificates
+RUN mkdir /opt/minion/server-certs
+
 # Create SSH Key-Pair to use with the Karaf Shell
-# This is a workaround to be able to use our opennms:health-check which does not work with the karaf/bin/client command
+# This is a workaround to be able to use our health:check which does not work with the karaf/bin/client command
 RUN mkdir /opt/minion/.ssh && \
     ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N "" && \
     chmod 700 /opt/minion/.ssh && \

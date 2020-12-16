@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>26.1.3-SNAPSHOT</version>
+  <version>28.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -843,9 +843,36 @@
           </dynamicDependencies>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-enforcer-plugin</artifactId>
+       <executions>
+         <execution>
+           <id>enforce-maven</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <rules>
+               <requireMavenVersion>
+                 <version>[3.5,)</version>
+               </requireMavenVersion>
+               <requireJavaVersion>
+                 <version>[1.8.0,9)</version>
+               </requireJavaVersion>
+             </rules>
+           </configuration>
+         </execution>
+       </executions>
+     </plugin>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-clean-plugin</artifactId>
@@ -933,17 +960,6 @@
           <execution>
             <phase>validate</phase>
             <configuration>
-              <target>
-                <condition property="java.versionokay">
-                  <or>
-                    <!-- Don't forget to update the <fail> message below -->
-                    <contains string="${java.version}" substring="1.8."/>
-                    <contains string="${java.vm.version}" substring="1.8."/>
-                  </or>
-                </condition>
-                <fail unless="java.versionokay">You must use Java 1.8 to build!</fail>
-                <echo message="update policy is ${updatePolicy}"/>
-              </target>
               <target>
                 <property name="opennms.build.basedir" location="." />
                 <echo message="base directory is ${opennms.build.basedir}" />
@@ -1196,7 +1212,7 @@
       Add target/endorsed as an endorsed API directory in case projects require it.
     -->
     <argLineMemory>-Xmx1g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed -Dpoller.logfile=/tmp/remote-poller.log</argLine>
+    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
     <skipITs>true</skipITs>
 
     <!--
@@ -1257,7 +1273,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>26.1.3.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>28.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1290,8 +1306,7 @@
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
-    <poller.logfile>/tmp/remote-poller.log</poller.logfile>
-
+  
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -1305,7 +1320,6 @@
 
 
     <!-- code signing properties - used in opennms-webstart -->
-    <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in features/remote-poller/pom.xml -->
     <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
     <webstart.keypass>opennms</webstart.keypass>
     <webstart.storepass>opennms</webstart.storepass>
@@ -1335,6 +1349,7 @@
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
+    <bouncyCastleVersion>1.66</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1375,12 +1390,13 @@
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
+    <geohashVersion>1.4.0</geohashVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
-    <grpcVersion>1.24.0</grpcVersion>
+    <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
-    <guavagRPCVersion>23.0</guavagRPCVersion>
+    <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.8.2</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1396,13 +1412,13 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
-    <jcifsVersion>1.3.19</jcifsVersion>
+    <jcifsVersion>2.1.4</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.34.v20201102</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
-    <jinteropVersion>2.0.8</jinteropVersion>
+    <jinteropVersion>3.0.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
@@ -1427,7 +1443,7 @@
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.8</paxWebVersion>
-    <protobufVersion>3.11.4</protobufVersion>
+    <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>2.0.7</powermockVersion>
@@ -2143,17 +2159,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.http-remoting</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>opennms-remote-poller-windows</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.system-report</artifactId>
         <version>${project.version}</version>
@@ -2246,11 +2251,6 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.shell</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.poller</groupId>
-        <artifactId>org.opennms.features.poller.remote</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2876,21 +2876,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.tests</groupId>
         <artifactId>org.opennms.tests.mock-elements</artifactId>
         <version>${project.version}</version>
@@ -3179,7 +3164,7 @@
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.8.2</version>
+        <version>1.9.15</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
@@ -4049,6 +4034,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>com.spotify</groupId>
+        <artifactId>hamcrest-pojo</artifactId>
+        <version>1.2.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>com.jayway.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>1.7.0</version>
@@ -4250,11 +4241,6 @@
         <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
       </dependency>
       <dependency>
-        <groupId>org.tuckey</groupId>
-        <artifactId>urlrewritefilter</artifactId>
-        <version>4.0.3</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
         <version>3.16</version>
@@ -4352,6 +4338,16 @@
         <artifactId>spock-core</artifactId>
         <version>${spockVersion}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>${bouncyCastleVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
