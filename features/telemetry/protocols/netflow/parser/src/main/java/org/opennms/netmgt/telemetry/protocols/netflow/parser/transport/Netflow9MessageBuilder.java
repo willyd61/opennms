@@ -143,7 +143,7 @@ public class Netflow9MessageBuilder {
 //                            builder.getLastSwitched().getValue() - builder.getFirstSwitched().getValue()));
 
             builder.setLastSwitched(setLongValue(builder.getTimestamp()));
-            builder.setFirstSwitched(setLongValue(builder.getTimestamp() - flowActiveTimeout));
+            builder.setFirstSwitched(setLongValue(builder.getTimestamp() - flowActiveTimeout * 1000L));
         }
 
         // set vlan
